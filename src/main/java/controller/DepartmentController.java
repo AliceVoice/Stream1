@@ -1,11 +1,11 @@
 package controller;
 
-import model.Employee;
 import org.springframework.web.bind.annotation.GetMapping;
+import service.DepartmentsService;
+import model.Employee;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import service.DepartmentsService;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,4 +40,3 @@ public class DepartmentController {
         return service.groupByDepartmentId();
     }
 }
-

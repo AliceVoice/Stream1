@@ -1,11 +1,11 @@
 package service;
 
-import exception.EmployeeAlreadyAddedException;
-import exception.EmployeeNotFoundException;
-import exception.EmployeeStorageIsFullException;
+import exception.*;
+import exception.IllegalArgumentException;
+import helper.HelperNull;
 import model.Employee;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import util.StringUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -13,31 +13,35 @@ import java.util.Map;
 
 @Service
 public class EmployeeService {
-    private static final int employeeCount = 5;
-    private final Map<String, Employee> employees = new HashMap<>();
-
-    private static void checkUserData(String firstName, String lastName) {
-        if (StringUtils.isNullOrEmpty(firstName) || StringUtils.isNullOrEmpty(lastName)) {
-            throw new IllegalArgumentException();
-        }
-    }
+    private static final int employeeCount = 10;
+    private final Map<String, Employee> employees = new HashMap<>(employeeCount);
 
     public Employee createEmployee(String firstName, String lastName, int salary, int department) {
-        EmployeeService.checkUserData(firstName, lastName);
         if (employees.size() >= employeeCount) {
             throw new EmployeeStorageIsFullException();
         }
         String key = getKey(firstName, lastName);
+        if (HelperNull.isEmptyString(firstName) || HelperNull.isEmptyString(lastName)) {
+            throw new IllegalArgumentException();
+        }
+        if (!StringUtils.isAlpha(firstName) || !StringUtils.isAlpha(lastName)) {
+            throw new InputException();
+        }
         if (employees.containsKey(key)) {
             throw new EmployeeAlreadyAddedException();
         }
-        Employee employee = new Employee(firstName, lastName);
+        Employee employee = new Employee(StringUtils.capitalize(firstName), StringUtils.capitalize(lastName), salary, department);
         employees.put(key, employee);
         return employee;
     }
 
     public Employee removeEmployee(String firstName, String lastName) {
-        EmployeeService.checkUserData(firstName, lastName);
+        if (HelperNull.isEmptyString(firstName) || HelperNull.isEmptyString(lastName)) {
+            throw new IllegalArgumentException();
+        }
+        if (!StringUtils.isAlpha(firstName) || !StringUtils.isAlpha(lastName)) {
+            throw new InputException();
+        }
         Employee employee = employees.remove(getKey(firstName, lastName));
         if (employee == null) {
             throw new EmployeeNotFoundException();
@@ -46,7 +50,12 @@ public class EmployeeService {
     }
 
     public Employee findEmployee(String firstName, String lastName) {
-        EmployeeService.checkUserData(firstName, lastName);
+        if (HelperNull.isEmptyString(firstName) || HelperNull.isEmptyString(lastName)) {
+            throw new IllegalArgumentException();
+        }
+        if (!StringUtils.isAlpha(firstName) || !StringUtils.isAlpha(lastName)) {
+            throw new InputException();
+        }
         String key = getKey(firstName, lastName);
         Employee employee = employees.get(key);
         if (employee == null) {
@@ -60,6 +69,6 @@ public class EmployeeService {
     }
 
     private String getKey(String firstName, String lastName) {
-        return firstName + lastName;
+        return StringUtils.capitalize(firstName) + StringUtils.capitalize(lastName);
     }
 }

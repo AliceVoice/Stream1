@@ -43,4 +43,3 @@ public class DepartmentsService {
                 .collect(Collectors.groupingBy(Employee::getDepartmentId));
     }
 }
-
